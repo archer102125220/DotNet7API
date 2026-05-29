@@ -56,11 +56,17 @@ dotnet DotNet7API.dll
 ### A. 使用 Docker (容器化)
 若您的環境支援 Docker，您可以撰寫 `Dockerfile`，將 `.NET SDK` 用於編譯階段，並使用輕量級的 `.NET Runtime` 映像檔作為執行環境。這能確保應用程式在任何支援 Docker 的環境中都能一致地執行，也是目前最主流的部署方式。
 
-### B. Linux (Nginx / Apache 搭配 Kestrel)
+### B. Windows Server (搭配 IIS)
+在 Windows Server 上，.NET 應用程式最標準的部署方式是搭配 IIS (Internet Information Services)：
+- 必須先在伺服器安裝 **.NET 7 Hosting Bundle** (包含 .NET Runtime 與 IIS 整合模組 ASP.NET Core Module)。
+- 在 IIS 管理員中建立新的網站，並將實體路徑指向發布的 `./publish` 資料夾。
+- 請務必將該網站的「應用程式集區 (Application Pool)」設定為「**無受控碼 (No Managed Code)**」，因為 ASP.NET Core 是獨立執行程序，IIS 僅作為反向代理伺服器。
+
+### C. Linux (Nginx / Apache 搭配 Kestrel)
 在 Linux 伺服器上，通常會將 ASP.NET Core 內建的 Kestrel 伺服器放在反向代理 (Reverse Proxy) 伺服器 (如 Nginx 或 Apache) 後面。
 - Nginx 負責處理 HTTPS 憑證、靜態檔案及請求轉發。
 - 建議使用 `systemd` 建立服務 (Service) 來管理您的應用程式，確保它在伺服器重開機時能自動啟動，或在意外崩潰時自動重啟。
 
-### C. 雲端平台 (Azure App Service / AWS / GCP)
+### D. 雲端平台 (Azure App Service / AWS / GCP)
 - **Azure App Service**：對於 .NET 應用程式具有最佳支援，可以透過 Visual Studio 直接發布，或設定 CI/CD Pipeline (如 GitHub Actions) 進行自動部署。
 - **AWS / GCP**：可透過各大平台的容器服務 (ECS / Cloud Run) 部署 Docker 映像檔，或直接架設在虛擬機器 (EC2 / GCE) 上。
